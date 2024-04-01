@@ -86,7 +86,7 @@ const RightPanel = () => {
     formState: { isLoading },
   } = useForm();
 
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, error } = useAuth();
 
   const [visible, setVisible] = useState(false);
 
@@ -98,7 +98,7 @@ const RightPanel = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard");
+      navigate("/");
     }
   }, [isAuthenticated, navigate]);
 
@@ -149,6 +149,7 @@ const RightPanel = () => {
             >
               Login
             </Button>
+            {error && <Text color="red.500">{error}</Text>}
           </VStack>
         </form>
       </Stack>
