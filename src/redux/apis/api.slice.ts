@@ -53,24 +53,22 @@ export const apiSlice = createApi({
         body: data,
       }),
       onQueryStarted: async ({ id, ...data }, { dispatch, queryFulfilled }) => {
-        // Perform side effects here
-        const patchResult: ReturnType<typeof dispatch> = dispatch(
+        const patchResult = dispatch(
           apiSlice.util.updateQueryData("getIot", id, (draft) => {
-            return { ...draft, ...data };
+            // Update the draft with the new data
+            Object.assign(draft, data);
           })
         );
         try {
-          await queryFulfilled; // Wait for the mutation to complete
-          return patchResult;
+          await queryFulfilled; // Wait for the mutation to complete successfully
+          // You can perform any action after the query is fulfilled without returning a value
         } catch (error) {
-          // Undo the optimistic update
-          dispatch(
-            apiSlice.util.updateQueryData("getIot", id, (draft) => {
-              return draft;
-            })
-          );
+          // Undo the optimistic update on error
+          dispatch(patchResult.undo);
+          // Optionally, throw the error to handle it in the calling code
           throw error;
         }
+        // Make sure not to return anything
       },
     }),
   }),
