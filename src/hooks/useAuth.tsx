@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 
-export const API_BASE_URL = "http://localhost:3000";
+export const API_BASE_URL = "https://gymsense-api-production.up.railway.app";
 
 interface User {
   token: string;
