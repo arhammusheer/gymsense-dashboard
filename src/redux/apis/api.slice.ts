@@ -1,11 +1,18 @@
 // api/apiSlice.js
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "../store"; // Import your store's root state
 import { API_BASE_URL } from "../const";
+import { RootState } from "../store"; // Import your store's root state
 
-interface Iot {
+// Optional fields are only available when authorized
+export interface Iot {
   id: string;
+  key?: string;
   occupancy: boolean;
+  batteryLevel?: number;
+  name?: string;
+  location?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export const apiSlice = createApi({
@@ -27,9 +34,20 @@ export const apiSlice = createApi({
       transformResponse: (response: { status: boolean; data: Iot[] }) =>
         response.data,
     }),
+
+    getIot: builder.query<Iot, string>({
+      query: (id) => `/iot/${id}`,
+      transformResponse: (response: { status: boolean; data: Iot }) =>
+        response.data,
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const { useGetIotsQuery } = apiSlice;
+
+export const iot = {
+  getIots: apiSlice.useGetIotsQuery,
+  getIot: apiSlice.useGetIotQuery,
+};
