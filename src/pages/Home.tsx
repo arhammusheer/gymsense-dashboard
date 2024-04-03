@@ -82,8 +82,8 @@ const Iot = ({
   id: string;
   batteryLevel?: number;
 }) => {
-  const occ = useColorModeValue("red.200", "green.900");
-  const avail = useColorModeValue("green.200", "red.900");
+  const occ = useColorModeValue("red.200", "red.900");
+  const avail = useColorModeValue("green.200", "green.900");
 
   const navigate = useNavigate();
 

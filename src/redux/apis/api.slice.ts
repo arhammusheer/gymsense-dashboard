@@ -15,6 +15,11 @@ export interface Iot {
   updatedAt?: string;
 }
 
+interface IotUpdate {
+  name?: string;
+  location?: string;
+}
+
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
@@ -40,6 +45,34 @@ export const apiSlice = createApi({
       transformResponse: (response: { status: boolean; data: Iot }) =>
         response.data,
     }),
+
+    updateIot: builder.mutation<Iot, { id: string } & IotUpdate>({
+      query: ({ id, ...data }) => ({
+        url: `/iot/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      onQueryStarted: async ({ id, ...data }, { dispatch, queryFulfilled }) => {
+        // Perform side effects here
+        const patchResult: ReturnType<typeof dispatch> = dispatch(
+          apiSlice.util.updateQueryData("getIot", id, (draft) => {
+            return { ...draft, ...data };
+          })
+        );
+        try {
+          await queryFulfilled; // Wait for the mutation to complete
+          return patchResult;
+        } catch (error) {
+          // Undo the optimistic update
+          dispatch(
+            apiSlice.util.updateQueryData("getIot", id, (draft) => {
+              return draft;
+            })
+          );
+          throw error;
+        }
+      },
+    }),
   }),
 });
 
@@ -50,4 +83,5 @@ export const { useGetIotsQuery } = apiSlice;
 export const iot = {
   getIots: apiSlice.useGetIotsQuery,
   getIot: apiSlice.useGetIotQuery,
+  updateIot: apiSlice.useUpdateIotMutation,
 };

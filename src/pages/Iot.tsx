@@ -4,13 +4,25 @@ import {
   FormHelperText,
   FormLabel,
   Heading,
+  Icon,
   IconButton,
   Input,
+  InputGroup,
   Stack,
   Tooltip,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
+import { CgCheck } from "react-icons/cg";
 import { RiRepeat2Line } from "react-icons/ri";
+import {
+  TbBattery,
+  TbBattery1,
+  TbBattery2,
+  TbBattery3,
+  TbBattery4,
+  TbBatteryOff,
+} from "react-icons/tb";
+import { TiTimes } from "react-icons/ti";
 import { useParams } from "react-router-dom";
 import PageHeader from "../components/headers/PageHeader";
 import { Iot, iot } from "../redux/apis/api.slice";
@@ -44,32 +56,36 @@ export default function Iot() {
   const title = () => {
     if (data && data.name) return data.name;
     if (data && data.id) return data.id;
-
     return "Unknown";
+  };
+
+  const subtitle = () => {
+    if (isSuccess) {
+      return `Occupancy: ${occupied}`;
+    }
+    return "Device Information";
   };
 
   return (
     <Box>
       <Box p={8} bg={bg()} color="white">
-        <PageHeader
-          title={title()}
-          subtitle="Device Information"
-          isLoading={isLoading}
-        >
+        <PageHeader title={title()} subtitle={subtitle()} isLoading={isLoading}>
           <RefetchButton refetch={() => refetch()} />
         </PageHeader>
-        {isSuccess && (
-          <Box>
-            <Box>Name: {data.name || data.id}</Box>
-            <Box>Occupancy: {occupied}</Box>
-            <Box>Battery Level: {data.batteryLevel}%</Box>
-          </Box>
-        )}
       </Box>
       {data && <AdminControls data={data} />}
     </Box>
   );
 }
+
+const BatteryLevel = ({ level }: { level: number }) => {
+  if (level < 0) return <Icon h={"2rem"} w={"2rem"} as={TbBatteryOff} />;
+  if (level === 0) return <Icon h={"2rem"} w={"2rem"} as={TbBattery1} />;
+  if (level <= 25) return <Icon h={"2rem"} w={"2rem"} as={TbBattery2} />;
+  if (level <= 50) return <Icon h={"2rem"} w={"2rem"} as={TbBattery3} />;
+  if (level <= 75) return <Icon h={"2rem"} w={"2rem"} as={TbBattery4} />;
+  return <Icon h={"2rem"} w={"2rem"} as={TbBattery} />;
+};
 
 const RefetchButton = ({ refetch }: { refetch: () => void }) => {
   return (
@@ -99,6 +115,7 @@ const AdminControls = ({ data }: { data: Iot }) => {
   return (
     <Stack p={8} hidden={!hasPermission(data.id)} maxW={"md"}>
       <Heading>Admin Controls</Heading>
+      <BatteryLevel level={data.batteryLevel || -1} />
       <Stack spacing={4} py={4}>
         <FormControl>
           <FormLabel>Id</FormLabel>
@@ -132,19 +149,79 @@ const AdminControls = ({ data }: { data: Iot }) => {
           <FormHelperText>Security key for this device</FormHelperText>
         </FormControl>
 
-        <FormControl>
-          <FormLabel>Name</FormLabel>
-          <Input value={data.name} />
-          <FormHelperText>Device name</FormHelperText>
-        </FormControl>
+        <MutableField
+          label="Name"
+          name="name"
+          id={data.id}
+          defaultValue={data.name || ""}
+          helptext="Device name"
+        />
 
-        <FormControl>
-          <FormLabel>Location</FormLabel>
-          <Input value={data.location} />
-          <FormHelperText>Device location</FormHelperText>
-        </FormControl>
+        <MutableField
+          label="Location"
+          name="location"
+          id={data.id}
+          defaultValue={data.location || ""}
+          helptext="Device location"
+        />
       </Stack>
     </Stack>
+  );
+};
+
+const MutableField = ({
+  label,
+  name,
+  id,
+  defaultValue,
+  helptext,
+}: {
+  label: string;
+  name: string;
+  id: string;
+  defaultValue: string;
+  helptext?: string;
+}) => {
+  const [updateIot, { isLoading }] = iot.updateIot();
+
+  const [value, setValue] = useState(defaultValue);
+
+  return (
+    <FormControl>
+      <FormLabel>{label}</FormLabel>
+      <InputGroup gap={2}>
+        <Input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              updateIot({ id, [name]: value });
+            }
+            if (e.key === "Escape") {
+              setValue(defaultValue);
+            }
+          }}
+        />
+        <IconButton
+          hidden={value === defaultValue}
+          isLoading={isLoading}
+          onClick={() => {
+            updateIot({ id, [name]: value });
+          }}
+          colorScheme="green"
+          aria-label="Update"
+          icon={<Icon as={CgCheck} size="sm" />}
+        />
+        <IconButton
+          hidden={value === defaultValue}
+          onClick={() => setValue(defaultValue)}
+          colorScheme="red"
+          aria-label="Reset"
+          icon={<Icon as={TiTimes} size="sm" />}
+        />
+      </InputGroup>
+      {helptext && <FormHelperText>{helptext}</FormHelperText>}
+    </FormControl>
   );
 };
 
