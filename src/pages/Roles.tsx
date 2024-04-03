@@ -8,11 +8,12 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { useSelector } from "react-redux";
 import PageHeader from "../components/headers/PageHeader";
-import { useAuth } from "../hooks/useAuth";
+import { RootState } from "../redux/store";
 
 export default function Roles() {
-  const { permissions } = useAuth();
+  const permissions = useSelector((state: RootState) => state.auth.permissions);
   return (
     <Box>
       <PageHeader title="Role Management" subtitle="Manage user roles" />

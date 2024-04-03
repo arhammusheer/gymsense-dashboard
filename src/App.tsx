@@ -1,16 +1,19 @@
+import { useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import { useAuth } from "./hooks/useAuth";
 import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
+import Iot from "./pages/Iot";
+import Login from "./pages/Login";
 import Roles from "./pages/Roles";
+import { RootState } from "./redux/store";
 const App = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/iot/:id" element={<Iot />} />
         {isAuthenticated ? (
           <>
             <Route path="/dashboard" element={<Dashboard />} />

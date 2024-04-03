@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
-import { API_BASE_URL, useAuth } from "./useAuth";
+import { useAppSelector } from "../redux/store";
+import { API_BASE_URL } from "../redux/const";
 
 interface Iot {
   id: string;
@@ -8,7 +9,7 @@ interface Iot {
 }
 
 const useIot = () => {
-  const { token } = useAuth();
+  const { token } = useAppSelector((state) => state.auth);
 
   const api = axios.create({
     baseURL: API_BASE_URL,
@@ -17,7 +18,7 @@ const useIot = () => {
   const [loading, setLoading] = useState(true);
   const [iot, setIot] = useState<Iot[]>([]);
 
-  const getIot = async () => {
+  const getIots = async () => {
     setLoading(true);
     const { data } = (
       await api.get("/iot", {
@@ -30,7 +31,7 @@ const useIot = () => {
     setLoading(false);
   };
 
-  return { loading, iot, getIot };
+  return { loading, iot, getIots };
 };
 
 export default useIot;

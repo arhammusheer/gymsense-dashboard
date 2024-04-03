@@ -16,10 +16,11 @@ import {
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 import gymimage from "../assets/gym.jpg";
 import FullCenter from "../components/utility/FullCenter";
-import { useAuth } from "../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { authActions } from "../redux/slices/auth.slice";
+import { useAppDispatch, useAppSelector } from "../redux/store";
 
 export default function Login() {
   return (
@@ -85,16 +86,16 @@ const RightPanel = () => {
     handleSubmit,
     formState: { isLoading },
   } = useForm();
+  const dispatch = useAppDispatch();
 
-  const { login, isAuthenticated, error } = useAuth();
-
+  const { isAuthenticated, error } = useAppSelector((state) => state.auth);
   const [visible, setVisible] = useState(false);
 
-  const onSubmit = (data: FieldValues) => {
-    login(data.email, data.password);
-  };
-
   const navigate = useNavigate();
+
+  const onSubmit = (data: FieldValues) => {
+    dispatch(authActions.login(data as { email: string; password: string }));
+  };
 
   useEffect(() => {
     if (isAuthenticated) {

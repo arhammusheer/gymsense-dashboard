@@ -11,7 +11,7 @@ export default function PageHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <Stack direction={"row"} justify={"space-between"} px={4} py={8}>
+    <Stack direction={"row"} justify={"space-between"} py={8}>
       <Stack spacing={2} justify={"center"}>
         <Heading as="h1" size="2xl">
           {title}

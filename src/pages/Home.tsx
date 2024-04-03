@@ -12,22 +12,23 @@ import {
 import { useEffect } from "react";
 import { GiBattery75 } from "react-icons/gi";
 import PageHeader from "../components/headers/PageHeader";
-import { useAuth } from "../hooks/useAuth";
 import useIot from "../hooks/useIot";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../redux/store";
 
 export default function Home() {
-  const { loading, iot, getIot } = useIot();
-  const { token } = useAuth();
+  const { loading, iot, getIots } = useIot();
+  const { token } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    getIot();
+    getIots();
   }, [token]);
 
   if (loading) {
     return <Box>Loading...</Box>;
   }
   return (
-    <Box p={4}>
+    <Box p={8}>
       <PageHeader title="Home" subtitle="Welcome to the gym">
         <Account />
       </PageHeader>
@@ -41,7 +42,7 @@ export default function Home() {
 }
 
 const Account = () => {
-  const { isAuthenticated, email } = useAuth();
+  const { isAuthenticated, email } = useAppSelector((state) => state.auth);
 
   return (
     <Box p={4}>
@@ -75,8 +76,20 @@ const Iot = ({
   const occ = useColorModeValue("red.200", "green.900");
   const avail = useColorModeValue("green.200", "red.900");
 
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/iot/${id}`);
+  };
+
   return (
-    <Card p={4} boxShadow="md" bg={occupancy ? avail : occ}>
+    <Card
+      p={4}
+      boxShadow="md"
+      bg={occupancy ? avail : occ}
+      cursor={"pointer"}
+      onClick={handleClick}
+    >
       <Heading as="h3" size="md" mb={2}>
         {name || id}
       </Heading>
