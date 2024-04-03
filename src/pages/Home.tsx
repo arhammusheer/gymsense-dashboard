@@ -9,33 +9,29 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
 import { GiBattery75 } from "react-icons/gi";
-import PageHeader from "../components/headers/PageHeader";
-import useIot from "../hooks/useIot";
 import { useNavigate } from "react-router-dom";
+import PageHeader from "../components/headers/PageHeader";
+import { useGetIotsQuery } from "../redux/apis/api.slice";
 import { useAppSelector } from "../redux/store";
 
 export default function Home() {
-  const { loading, iot, getIots } = useIot();
-  const { token } = useAppSelector((state) => state.auth);
+  const { isLoading, data, isSuccess } = useGetIotsQuery();
 
-  useEffect(() => {
-    getIots();
-  }, [token]);
-
-  if (loading) {
+  if (isLoading) {
     return <Box>Loading...</Box>;
   }
+
   return (
     <Box p={8}>
       <PageHeader title="Home" subtitle="Welcome to the gym">
         <Account />
       </PageHeader>
       <Grid templateColumns="repeat(auto-fill, minmax(250px, 1fr))" gap={4}>
-        {iot.map((device, index) => (
+        {isSuccess && data.map((device, index) => (
           <Iot key={index} {...device} />
         ))}
+        
       </Grid>
     </Box>
   );

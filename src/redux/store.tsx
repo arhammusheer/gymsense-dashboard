@@ -1,13 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query";
 import { useDispatch, useSelector } from "react-redux";
 import { apiSlice } from "./apis/api.slice";
-import { setupListeners } from "@reduxjs/toolkit/query";
+import animationSlice from "./slices/animation.slice";
 import authSlice from "./slices/auth.slice";
 
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     auth: authSlice,
+    animation: animationSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(apiSlice.middleware);
