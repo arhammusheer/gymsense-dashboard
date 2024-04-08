@@ -5,9 +5,16 @@ import Home from "./pages/Home";
 import Iot from "./pages/Iot";
 import Login from "./pages/Login";
 import Roles from "./pages/Roles";
-import { RootState } from "./redux/store";
+import { RootState, useAppDispatch } from "./redux/store";
+import { useEffect } from "react";
+import { authActions } from "./redux/slices/auth.slice";
 const App = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(authActions.recoverSession());
+  }, [dispatch]);
   return (
     <BrowserRouter>
       <Routes>

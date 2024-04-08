@@ -99,6 +99,18 @@ export const register = createAsyncThunk<
   }
 );
 
+// Recover session from httpOnly cookie
+export const recoverSession = createAsyncThunk<
+  LoginResponse,
+  void,
+  {
+    rejectValue: RejectResponse;
+  }
+>("auth/recoverSession", async () => {
+  const response = await axiosAuth.post("/user/recover");
+  return response.data;
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -160,5 +172,6 @@ export const authActions = {
   ...authSlice.actions,
   login,
   register,
+  recoverSession,
 };
 export default authSlice.reducer;
