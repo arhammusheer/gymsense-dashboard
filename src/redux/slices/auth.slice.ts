@@ -132,6 +132,7 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // Login reducers
     builder
       .addCase(login.pending, (state) => {
         state.isLoading = true;
@@ -149,6 +150,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload?.message || "";
       })
+      // Register reducers
       .addCase(register.pending, (state) => {
         state.isLoading = true;
       })
@@ -165,6 +167,19 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload?.message || "";
       });
+    // Recover session reducers
+    builder.addCase(recoverSession.fulfilled, (state, action) => {
+      state.email = action.payload.user.email;
+      state.token = action.payload.token;
+      state.permissions = action.payload.user.permissions;
+      state.isAuthenticated = true;
+    });
+    builder.addCase(recoverSession.rejected, (state) => {
+      state.isAuthenticated = false;
+    });
+    builder.addCase(recoverSession.pending, (state) => {
+      state.isLoading = true;
+    });
   },
 });
 
