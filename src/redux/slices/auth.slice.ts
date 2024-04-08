@@ -44,7 +44,7 @@ interface RejectResponse {
 }
 
 const axiosAuth = axios.create({
-  baseURL: "https://gymsense-api-production.up.railway.app",
+  baseURL: "https://api.sdp.croissant.one",
   withCredentials: true,
 });
 
