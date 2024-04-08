@@ -4,15 +4,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { apiSlice } from "./apis/api.slice";
 import animationSlice from "./slices/animation.slice";
 import authSlice from "./slices/auth.slice";
+import createSSEMiddleware from "./middleware/sse";
+import { API_BASE_URL } from "./const";
+import notificationSlice from "./slices/notification.slice";
+
+const sseMiddleware = createSSEMiddleware(`${API_BASE_URL}/notifications`);
 
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     auth: authSlice,
     animation: animationSlice,
+    notifications: notificationSlice,
   },
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware().concat(apiSlice.middleware);
+    return getDefaultMiddleware()
+      .concat(apiSlice.middleware)
+      .concat(sseMiddleware);
   },
   devTools: { name: "Gymsense", trace: true, traceLimit: 25 },
 });

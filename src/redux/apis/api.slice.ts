@@ -39,13 +39,11 @@ export const apiSlice = createApi({
       transformResponse: (response: { status: boolean; data: Iot[] }) =>
         response.data,
     }),
-
     getIot: builder.query<Iot, string>({
       query: (id) => `/iot/${id}`,
       transformResponse: (response: { status: boolean; data: Iot }) =>
         response.data,
     }),
-
     updateIot: builder.mutation<Iot, { id: string } & IotUpdate>({
       query: ({ id, ...data }) => ({
         url: `/iot/${id}`,
@@ -71,7 +69,6 @@ export const apiSlice = createApi({
         // Make sure not to return anything
       },
     }),
-
     createIot: builder.mutation<Iot, void>({
       query: () => ({
         url: "/iot/create",
@@ -125,6 +122,7 @@ export const apiSlice = createApi({
       },
     }),
   }),
+
 });
 
 // Export hooks for usage in functional components, which are
