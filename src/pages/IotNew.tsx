@@ -8,7 +8,7 @@ export default function CreateNewIot() {
   const [createIot, { isLoading, isSuccess, data }] = iot.createIot();
   const navigate = useNavigate();
 
-  if (isSuccess) {
+  if (isSuccess && data) {
     // Redirect to the new Iot page
     navigate(`/iot/${data.id}`);
   }

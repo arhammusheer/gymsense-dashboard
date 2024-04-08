@@ -12,6 +12,7 @@ import {
   Heading,
   Icon,
   IconButton,
+  Skeleton,
   Stack,
   StackDivider,
   Text,
@@ -29,31 +30,48 @@ import { useAppDispatch, useAppSelector } from "../redux/store";
 import { authActions } from "../redux/slices/auth.slice";
 
 export default function Home() {
-  const { isLoading, data, isSuccess, refetch } = useGetIotsQuery();
-  const { token } = useAppSelector((state) => state.auth);
   // Setup refetch on token change
-  useEffect(() => {
-    if (token) {
-      refetch();
-    }
-  }, [refetch, token]);
-
-  if (isLoading) {
-    return <Box>Loading...</Box>;
-  }
 
   return (
     <Box p={8}>
       <PageHeader title="Home" subtitle="Welcome to the gym">
         <Account />
       </PageHeader>
-      <Grid templateColumns="repeat(auto-fill, minmax(250px, 1fr))" gap={4}>
-        {isSuccess &&
-          data.map((device, index) => <Iot key={index} {...device} />)}
-      </Grid>
+      <ListOfIots />
     </Box>
   );
 }
+
+const ListOfIots = () => {
+  const { isLoading, data, isSuccess, refetch } = useGetIotsQuery();
+  const { token } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (token) {
+      refetch();
+    }
+  }, [refetch, token]);
+  return (
+    <Grid templateColumns="repeat(auto-fill, minmax(250px, 1fr))" gap={4}>
+      {isSuccess &&
+        data.map((device, index) => <Iot key={index} {...device} />)}
+      {isLoading &&
+        Array.from({ length: 5 }).map((_, index) => (
+          <Card key={index} p={4} boxShadow="md">
+            <Skeleton>
+              <Heading as="h3" size="md" mb={2}>
+                Loading...
+              </Heading>
+            </Skeleton>
+            <Skeleton mt={4}>
+              <Text>Loading...</Text>
+            </Skeleton>
+          </Card>
+        ))}
+    </Grid>
+  );
+};
+
 
 const Account = () => {
   const { isAuthenticated, email } = useAppSelector((state) => state.auth);
@@ -69,9 +87,9 @@ const Account = () => {
   } = useDisclosure();
 
   const authenticatedActions = {
-    logout: { label: "Logout", onClick: () => dispatch(authActions.logout()) },
     createIot: { label: "New Iot Device", onClick: () => navigate("/iot/new") },
     createHub: { label: "New Hub Device", onClick: () => navigate("/hub/new") },
+    logout: { label: "Logout", onClick: () => dispatch(authActions.logout()) },
   };
 
   const unauthenticatedActions = {
