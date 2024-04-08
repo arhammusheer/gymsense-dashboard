@@ -97,6 +97,33 @@ export const apiSlice = createApi({
         // Make sure not to return anything
       },
     }),
+    deleteIot: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/iot/${id}`,
+        method: "DELETE",
+      }),
+      onQueryStarted: async (id, { dispatch, queryFulfilled }) => {
+        const patchResult = dispatch(
+          apiSlice.util.updateQueryData("getIots", undefined, (draft) => {
+            // Remove the item from the list
+            draft.splice(
+              draft.findIndex((item) => item.id === id),
+              1
+            );
+          })
+        );
+        try {
+          await queryFulfilled; // Wait for the mutation to complete successfully
+          // You can perform any action after the query is fulfilled without returning a value
+        } catch (error) {
+          // Undo the optimistic update on error
+          dispatch(patchResult.undo);
+          // Optionally, throw the error to handle it in the calling code
+          throw error;
+        }
+        // Make sure not to return anything
+      },
+    }),
   }),
 });
 
@@ -109,4 +136,5 @@ export const iot = {
   getIot: apiSlice.useGetIotQuery,
   updateIot: apiSlice.useUpdateIotMutation,
   createIot: apiSlice.useCreateIotMutation,
+  deleteIot: apiSlice.useDeleteIotMutation,
 };

@@ -1,5 +1,7 @@
 import {
   Box,
+  Button,
+  ButtonGroup,
   FormControl,
   FormHelperText,
   FormLabel,
@@ -8,8 +10,18 @@ import {
   IconButton,
   Input,
   InputGroup,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
   Stack,
   Tooltip,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { CgCheck } from "react-icons/cg";
@@ -23,15 +35,18 @@ import {
   TbBatteryOff,
 } from "react-icons/tb";
 import { TiTimes } from "react-icons/ti";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../components/headers/PageHeader";
 import type { Iot } from "../redux/apis/api.slice";
 import { iot } from "../redux/apis/api.slice";
 import { useAppSelector } from "../redux/store";
+import { BiTrash } from "react-icons/bi";
+import usePermission from "../hooks/usePermission";
 
 export default function Iot() {
   const id = useParams<{ id: string }>().id || "";
   const { isLoading, data, isSuccess, refetch } = iot.getIot(id);
+  const hasDeletePermission = usePermission("iot", "delete", id);
 
   const [occupied, setOccupied] = useState<"Taken" | "Available" | "Unknown">(
     "Unknown"
@@ -80,10 +95,54 @@ export default function Iot() {
       <Box p={8} bg={bg()} color="white">
         <PageHeader title={title()} subtitle={subtitle()} isLoading={isLoading}>
           <RefetchButton refetch={() => refetch()} />
+
+          {hasDeletePermission && <DeleteButton id={id} />}
         </PageHeader>
       </Box>
       {data && <AdminControls data={data} />}
     </Box>
+  );
+}
+
+function DeleteButton({ id }: { id: string }) {
+  const defaultBg = useColorModeValue("gray.100", "black");
+  const { onOpen, onClose, isOpen } = useDisclosure();
+  const [deleteIot, { isLoading, isSuccess }] = iot.deleteIot();
+  const navigate = useNavigate();
+
+  if (isSuccess) {
+    onClose();
+    navigate("/");
+  }
+
+  return (
+    <Popover isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+      <PopoverTrigger>
+        <IconButton aria-label="delete" icon={<BiTrash />} colorScheme="red" />
+      </PopoverTrigger>
+      <PopoverContent bg={defaultBg}>
+        <PopoverArrow />
+        <PopoverCloseButton />
+        <PopoverHeader>Confirmation</PopoverHeader>
+        <PopoverBody>Are you sure you want to delete this device?</PopoverBody>
+        <PopoverFooter justifyContent="flex-end">
+          <ButtonGroup size="sm">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              colorScheme="red"
+              isLoading={isLoading}
+              onClick={() => {
+                deleteIot(id);
+              }}
+            >
+              Delete
+            </Button>
+          </ButtonGroup>
+        </PopoverFooter>
+      </PopoverContent>
+    </Popover>
   );
 }
 
