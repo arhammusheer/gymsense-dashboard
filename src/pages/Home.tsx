@@ -2,20 +2,30 @@ import {
   Box,
   Button,
   Card,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
   Grid,
   Heading,
   Icon,
+  IconButton,
   Stack,
+  StackDivider,
   Text,
   useBreakpointValue,
   useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { CgMenu } from "react-icons/cg";
 import { GiBattery75 } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/headers/PageHeader";
 import { useGetIotsQuery } from "../redux/apis/api.slice";
 import { useAppSelector } from "../redux/store";
-import { useEffect } from "react";
 
 export default function Home() {
   const { isLoading, data, isSuccess, refetch } = useGetIotsQuery();
@@ -50,8 +60,80 @@ const Account = () => {
 
   const isSM = useBreakpointValue({ base: false, sm: true });
 
+  const {
+    isOpen: isSidebarOpen,
+    onOpen: onSidebarOpen,
+    onClose: onSidebarClose,
+  } = useDisclosure();
+
+  const authenticatedActions = {
+    logout: { label: "Logout", onClick: () => console.log("Logout") },
+  };
+
+  const unauthenticatedActions = {
+    login: { label: "Login", onClick: () => navigate("/login") },
+  };
+
+  const bg = useColorModeValue("white", "black");
+  const color = useColorModeValue("black", "white");
+  const hoverBg = useColorModeValue("blue.100", "blue.900");
+
   if (!isSM) {
-    return null;
+    return (
+      <>
+        <IconButton
+          colorScheme="blue"
+          onClick={onSidebarOpen}
+          icon={<Icon as={CgMenu} />}
+          aria-label="Open Account Drawer"
+        />
+        <Drawer
+          isOpen={isSidebarOpen}
+          placement="right"
+          size={"xl"}
+          onClose={onSidebarClose}
+        >
+          <DrawerOverlay />
+          <DrawerContent bg={bg}>
+            <DrawerCloseButton />
+            <DrawerHeader>Account</DrawerHeader>
+            <Stack
+              direction="column"
+              spacing={4}
+              divider={<StackDivider />}
+              p={4}
+            >
+              {isAuthenticated
+                ? Object.values(authenticatedActions).map((action, index) => (
+                    <Text
+                      key={index}
+                      onClick={action.onClick}
+                      cursor={"pointer"}
+                      _hover={{ bg: hoverBg, color: color }}
+                      p={4}
+                      rounded={"md"}
+                    >
+                      {action.label}
+                    </Text>
+                  ))
+                : Object.values(unauthenticatedActions).map((action, index) => (
+                    <Text
+                      key={index}
+                      onClick={action.onClick}
+                      cursor={"pointer"}
+                      _hover={{ bg: hoverBg, color: color }}
+                      p={4}
+                      rounded={"md"}
+                    >
+                      {action.label}
+                    </Text>
+                  ))}
+            </Stack>
+            <DrawerBody></DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      </>
+    );
   }
 
   return (
