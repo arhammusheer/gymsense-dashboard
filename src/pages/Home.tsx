@@ -25,7 +25,8 @@ import { GiBattery75 } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/headers/PageHeader";
 import { useGetIotsQuery } from "../redux/apis/api.slice";
-import { useAppSelector } from "../redux/store";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { authActions } from "../redux/slices/auth.slice";
 
 export default function Home() {
   const { isLoading, data, isSuccess, refetch } = useGetIotsQuery();
@@ -57,8 +58,9 @@ export default function Home() {
 const Account = () => {
   const { isAuthenticated, email } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const isSM = useBreakpointValue({ base: false, sm: true });
+  const isSM = useBreakpointValue({ base: false, sm: false });
 
   const {
     isOpen: isSidebarOpen,
@@ -67,11 +69,18 @@ const Account = () => {
   } = useDisclosure();
 
   const authenticatedActions = {
-    logout: { label: "Logout", onClick: () => console.log("Logout") },
+    logout: { label: "Logout", onClick: () => dispatch(authActions.logout()) },
+    createIot: { label: "New Iot Device", onClick: () => navigate("/iot/new") },
+    createHub: { label: "New Hub Device", onClick: () => navigate("/hub/new") },
   };
 
   const unauthenticatedActions = {
     login: { label: "Login", onClick: () => navigate("/login") },
+  };
+
+  const onClickHandler = (action: () => void) => {
+    action();
+    onSidebarClose();
   };
 
   const bg = useColorModeValue("white", "black");
@@ -96,7 +105,9 @@ const Account = () => {
           <DrawerOverlay />
           <DrawerContent bg={bg}>
             <DrawerCloseButton />
-            <DrawerHeader>Account</DrawerHeader>
+            <DrawerHeader>
+              {isAuthenticated ? `Hi! ${email}` : "Account"}
+            </DrawerHeader>
             <Stack
               direction="column"
               spacing={4}
@@ -107,7 +118,7 @@ const Account = () => {
                 ? Object.values(authenticatedActions).map((action, index) => (
                     <Text
                       key={index}
-                      onClick={action.onClick}
+                      onClick={() => onClickHandler(action.onClick)}
                       cursor={"pointer"}
                       _hover={{ bg: hoverBg, color: color }}
                       p={4}
@@ -119,7 +130,7 @@ const Account = () => {
                 : Object.values(unauthenticatedActions).map((action, index) => (
                     <Text
                       key={index}
-                      onClick={action.onClick}
+                      onClick={() => onClickHandler(action.onClick)}
                       cursor={"pointer"}
                       _hover={{ bg: hoverBg, color: color }}
                       p={4}

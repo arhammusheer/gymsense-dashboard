@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
+import { API_BASE_URL } from "../const";
 
 // interface User {
 //   token: string;
@@ -44,7 +45,7 @@ interface RejectResponse {
 }
 
 const axiosAuth = axios.create({
-  baseURL: "https://api.sdp.croissant.one",
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
@@ -111,26 +112,35 @@ export const recoverSession = createAsyncThunk<
   return response.data;
 });
 
+interface LogoutResponse {
+  status: boolean;
+}
+interface LogoutErrorReponse {
+  status: boolean;
+  message: string;
+}
+// Logout action
+export const logout = createAsyncThunk<
+  LogoutResponse,
+  void,
+  { rejectValue: LogoutErrorReponse }
+>("auth/logout", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axiosAuth.post("/user/logout");
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError;
+    if (!error.response) {
+      throw err;
+    }
+    return rejectWithValue(error.response.data as LogoutErrorReponse);
+  }
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {
-    logout: (state) => {
-      state.email = "";
-      state.token = "";
-      state.permissions = [];
-      localStorage.removeItem("user");
-    },
-    loadState: (state) => {
-      const user = localStorage.getItem("user");
-      if (user) {
-        const parsedUser = JSON.parse(user);
-        state.email = parsedUser.email;
-        state.token = parsedUser.token;
-        state.permissions = parsedUser.permissions;
-      }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     // Login reducers
     builder
@@ -180,6 +190,19 @@ const authSlice = createSlice({
     builder.addCase(recoverSession.pending, (state) => {
       state.isLoading = true;
     });
+    // Logout reducers
+    builder.addCase(logout.fulfilled, (state) => {
+      state.email = "";
+      state.token = "";
+      state.permissions = [];
+      state.isAuthenticated = false;
+    });
+    builder.addCase(logout.rejected, (state, action) => {
+      state.error = action.payload?.message || "";
+    });
+    builder.addCase(logout.pending, (state) => {
+      state.isLoading = true;
+    });
   },
 });
 
@@ -188,5 +211,6 @@ export const authActions = {
   login,
   register,
   recoverSession,
+  logout,
 };
 export default authSlice.reducer;

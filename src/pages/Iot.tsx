@@ -67,6 +67,14 @@ export default function Iot() {
     return "Device Information";
   };
 
+  if (!isSuccess && !isLoading) {
+    return (
+      <Box p={8}>
+        <PageHeader title="Unknown Device" subtitle="Device Information" />
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Box p={8} bg={bg()} color="white">

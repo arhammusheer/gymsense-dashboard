@@ -8,6 +8,7 @@ import Roles from "./pages/Roles";
 import { RootState, useAppDispatch } from "./redux/store";
 import { useEffect } from "react";
 import { authActions } from "./redux/slices/auth.slice";
+import CreateNewIot from "./pages/IotNew";
 const App = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const dispatch = useAppDispatch();
@@ -20,6 +21,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/iot/new" element={<CreateNewIot />} />
         <Route path="/iot/:id" element={<Iot />} />
         {isAuthenticated ? (
           <>

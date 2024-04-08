@@ -71,6 +71,32 @@ export const apiSlice = createApi({
         // Make sure not to return anything
       },
     }),
+
+    createIot: builder.mutation<Iot, void>({
+      query: () => ({
+        url: "/iot/create",
+        method: "POST",
+      }),
+      transformResponse: (response: { iot: Iot }) => response.iot,
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        const patchResult = dispatch(
+          apiSlice.util.updateQueryData("getIots", undefined, (draft) => {
+            // Add the new item to the list
+            draft.push({ id: "temp", occupancy: false });
+          })
+        );
+        try {
+          await queryFulfilled; // Wait for the mutation to complete successfully
+          // You can perform any action after the query is fulfilled without returning a value
+        } catch (error) {
+          // Undo the optimistic update on error
+          dispatch(patchResult.undo);
+          // Optionally, throw the error to handle it in the calling code
+          throw error;
+        }
+        // Make sure not to return anything
+      },
+    }),
   }),
 });
 
@@ -82,4 +108,5 @@ export const iot = {
   getIots: apiSlice.useGetIotsQuery,
   getIot: apiSlice.useGetIotQuery,
   updateIot: apiSlice.useUpdateIotMutation,
+  createIot: apiSlice.useCreateIotMutation,
 };
