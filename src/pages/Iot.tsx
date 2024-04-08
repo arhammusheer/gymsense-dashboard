@@ -25,7 +25,8 @@ import {
 import { TiTimes } from "react-icons/ti";
 import { useParams } from "react-router-dom";
 import PageHeader from "../components/headers/PageHeader";
-import { Iot, iot } from "../redux/apis/api.slice";
+import type { Iot } from "../redux/apis/api.slice";
+import { iot } from "../redux/apis/api.slice";
 import { useAppSelector } from "../redux/store";
 
 export default function Iot() {
