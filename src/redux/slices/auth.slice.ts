@@ -45,6 +45,7 @@ interface RejectResponse {
 
 const axiosAuth = axios.create({
   baseURL: "https://gymsense-api-production.up.railway.app",
+  withCredentials: true,
 });
 
 // Async thunk for logging in
