@@ -35,7 +35,18 @@ const createSSEMiddleware = (url: string): Middleware => {
       switch (data.domain) {
         case "iot":
           apiSlice.util.updateQueryData("getIot", data.data.id, (oldData) => {
-            return { ...oldData, ...data.data };
+            oldData.name = data.data.name;
+            oldData.occupancy = data.data.occupancy;
+          });
+          apiSlice.util.updateQueryData("getIots", undefined, (oldData) => {
+            const iotIndex = oldData.findIndex(
+              (iot) => iot.id === data.data.id
+            );
+            console.log(iotIndex);
+            if (iotIndex !== -1) {
+              oldData[iotIndex].name = data.data.name;
+              oldData[iotIndex].occupancy = data.data.occupancy;
+            }
           });
           break;
         case "notification":

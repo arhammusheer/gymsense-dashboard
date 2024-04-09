@@ -15,13 +15,9 @@ export interface Iot {
   updatedAt?: string;
 }
 
-interface IotUpdate {
-  name?: string;
-  location?: string;
-}
-
 export const apiSlice = createApi({
   reducerPath: "api",
+  tagTypes: ["Iots"],
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
@@ -38,18 +34,25 @@ export const apiSlice = createApi({
       query: () => "/iot",
       transformResponse: (response: { status: boolean; data: Iot[] }) =>
         response.data,
+      providesTags: (result) =>
+        result
+          ? [...result.map(({ id }) => ({ type: "Iots" as const, id }))]
+          : [{ type: "Iots", id: "LIST" }],
     }),
+
     getIot: builder.query<Iot, string>({
       query: (id) => `/iot/${id}`,
       transformResponse: (response: { status: boolean; data: Iot }) =>
         response.data,
+      providesTags: (result, error, id) => [{ type: "Iots", id }],
     }),
-    updateIot: builder.mutation<Iot, { id: string } & IotUpdate>({
+    updateIot: builder.mutation<Iot, Partial<Iot> & Pick<Iot, "id">>({
       query: ({ id, ...data }) => ({
         url: `/iot/${id}`,
         method: "PUT",
         body: data,
       }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Iots", id }],
       onQueryStarted: async ({ id, ...data }, { dispatch, queryFulfilled }) => {
         const patchResult = dispatch(
           apiSlice.util.updateQueryData("getIot", id, (draft) => {
@@ -122,7 +125,6 @@ export const apiSlice = createApi({
       },
     }),
   }),
-
 });
 
 // Export hooks for usage in functional components, which are
