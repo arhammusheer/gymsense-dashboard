@@ -8,7 +8,10 @@ import createSSEMiddleware from "./middleware/sse";
 import { API_BASE_URL } from "./const";
 import notificationSlice from "./slices/notification.slice";
 
-const sseMiddleware = createSSEMiddleware(`${API_BASE_URL}/notifications`);
+export const anonyID = Math.random().toString(36).substring(7);
+const sseMiddleware = createSSEMiddleware(
+  `${API_BASE_URL}/notifications?anonyID=${anonyID}`
+);
 
 export const store = configureStore({
   reducer: {

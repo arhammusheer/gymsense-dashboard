@@ -44,7 +44,9 @@ const App = () => {
 const Notification = () => {
   const toast = useToast();
   const [audio] = useState(new Audio(notitificationSound));
-  const notifications = useAppSelector((state) => state.notifications);
+  const notifications = useAppSelector(
+    (state) => state.notifications.notifications
+  );
   const dispatch = useAppDispatch();
 
   // On new notification, show new toast with sound notification
@@ -64,7 +66,7 @@ const Notification = () => {
         dispatch(notificationActions.viewed(n.id));
       });
     }
-  }, [notifications, toast, audio]);
+  }, [notifications, toast, audio, dispatch]);
 
   return null;
 };

@@ -20,7 +20,7 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { MouseEvent, useEffect } from "react";
 import { CgMenu } from "react-icons/cg";
 import { GiBattery75 } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +28,8 @@ import PageHeader from "../components/headers/PageHeader";
 import { useGetIotsQuery } from "../redux/apis/api.slice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { authActions } from "../redux/slices/auth.slice";
+import { notificationActions } from "../redux/slices/notification.slice";
+import { BiBell } from "react-icons/bi";
 
 export default function Home() {
   // Setup refetch on token change
@@ -71,7 +73,6 @@ const ListOfIots = () => {
     </Grid>
   );
 };
-
 
 const Account = () => {
   const { isAuthenticated, email } = useAppSelector((state) => state.auth);
@@ -195,6 +196,16 @@ const Iot = ({
 }) => {
   const occ = useColorModeValue("red.200", "red.900");
   const avail = useColorModeValue("green.200", "green.900");
+  const dispatch = useAppDispatch();
+
+  const notifyWhenAvailable = (e: MouseEvent) => {
+    e.stopPropagation();
+    dispatch(
+      notificationActions.notifyWhenAvailable({
+        iotId: id,
+      })
+    );
+  };
 
   const navigate = useNavigate();
 
@@ -224,6 +235,11 @@ const Iot = ({
             {batteryLevel}%
           </Heading>
         )}
+        <IconButton
+          onClick={notifyWhenAvailable}
+          aria-label="Notify When Available"
+          icon={<BiBell />}
+        />
       </Stack>
     </Card>
   );
