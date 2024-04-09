@@ -34,20 +34,9 @@ const createSSEMiddleware = (url: string): Middleware => {
       const data: IEvent = JSON.parse(event.data);
       switch (data.domain) {
         case "iot":
-          apiSlice.util.updateQueryData("getIot", data.data.id, (oldData) => {
-            oldData.name = data.data.name;
-            oldData.occupancy = data.data.occupancy;
-          });
-          apiSlice.util.updateQueryData("getIots", undefined, (oldData) => {
-            const iotIndex = oldData.findIndex(
-              (iot) => iot.id === data.data.id
-            );
-            console.log(iotIndex);
-            if (iotIndex !== -1) {
-              oldData[iotIndex].name = data.data.name;
-              oldData[iotIndex].occupancy = data.data.occupancy;
-            }
-          });
+          // refetch the iot list
+          apiSlice.util.invalidateTags(["Iots"]);
+
           break;
         case "notification":
           store.dispatch(

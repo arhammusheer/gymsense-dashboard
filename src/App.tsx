@@ -47,14 +47,13 @@ const Notification = () => {
   const notifications = useAppSelector(
     (state) => state.notifications.notifications
   );
+  const focused = useAppSelector((state) => state.notifications.focused);
   const dispatch = useAppDispatch();
 
   // On new notification, show new toast with sound notification
   useEffect(() => {
     const unviewed = notifications.filter((n) => !n.viewed);
-
-    if (unviewed.length > 0) {
-      audio.play();
+    if (focused && unviewed.length > 0) {
       unviewed.forEach((n) => {
         toast({
           title: "Update",
@@ -66,7 +65,38 @@ const Notification = () => {
         dispatch(notificationActions.viewed(n.id));
       });
     }
-  }, [notifications, toast, audio, dispatch]);
+
+    if (!focused && unviewed.length > 0) {
+      audio.play();
+      const notification = new window.Notification("Update", {
+        body: unviewed[0].message,
+      });
+      notification.onclick = () => {
+        dispatch(notificationActions.viewed(unviewed[0].id));
+      };
+    }
+  }, [notifications, toast, audio, dispatch, focused]);
+
+  // Focus and away event listeners
+  useEffect(() => {
+    const onFocus = () => dispatch(notificationActions.focus());
+    const onBlur = () => dispatch(notificationActions.away());
+
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("blur", onBlur);
+
+    // Handle first focus event
+    if (document.hasFocus()) {
+      dispatch(notificationActions.focus());
+    } else {
+      dispatch(notificationActions.away());
+    }
+
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, [dispatch]);
 
   return null;
 };
