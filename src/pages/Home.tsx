@@ -196,6 +196,8 @@ const Iot = ({
 }) => {
   const occ = useColorModeValue("red.200", "red.900");
   const avail = useColorModeValue("green.200", "green.900");
+  const occButton = useColorModeValue("red.300", "red.800");
+  const availButton = useColorModeValue("green.300", "green.800");
   const dispatch = useAppDispatch();
 
   const notifyWhenAvailable = (e: MouseEvent) => {
@@ -239,6 +241,10 @@ const Iot = ({
           onClick={notifyWhenAvailable}
           aria-label="Notify When Available"
           icon={<BiBell />}
+          // On hover increase the size of the icon
+          bg={occupancy ? occ: avail}
+          _hover={{ bg: occupancy ? occButton : availButton }}
+          
         />
       </Stack>
     </Card>
