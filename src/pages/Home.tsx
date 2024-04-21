@@ -28,7 +28,7 @@ import PageHeader from "../components/headers/PageHeader";
 import { useGetIotsQuery } from "../redux/apis/api.slice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { authActions } from "../redux/slices/auth.slice";
-import { notificationActions } from "../redux/slices/notification.slice";
+import { notificationActions, requestNotificationPermission } from "../redux/slices/notification.slice";
 import { BiBell } from "react-icons/bi";
 
 export default function Home() {
@@ -200,8 +200,11 @@ const Iot = ({
   const availButton = useColorModeValue("green.300", "green.800");
   const dispatch = useAppDispatch();
 
-  const notifyWhenAvailable = (e: MouseEvent) => {
+  const notifyWhenAvailable = async (e: MouseEvent) => {
     e.stopPropagation();
+    // Request Notification Permission
+   await Notification.requestPermission()
+    // Notify when available
     dispatch(
       notificationActions.notifyWhenAvailable({
         iotId: id,

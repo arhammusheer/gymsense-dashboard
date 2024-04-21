@@ -12,6 +12,7 @@ interface Notification {
 interface NotificationState {
   notifications: Notification[];
   focused: boolean;
+  isGranted: boolean;
 }
 
 interface NotificationResponse {
@@ -49,12 +50,17 @@ export const notifyWhenAvailable = createAsyncThunk<
 const initialState: NotificationState = {
   notifications: [],
   focused: false,
+  isGranted: false,
 };
 
-const requestNotificationPermission = async () => {
+export const requestNotificationPermission = async () => {
   if (Notification.permission !== "granted") {
-    await Notification.requestPermission();
+    return await Notification.requestPermission()
+      .then(() => true)
+      .catch(() => false);
   }
+
+  return true;
 };
 
 const notificationSlice = createSlice({
@@ -80,6 +86,11 @@ const notificationSlice = createSlice({
     away: (state) => {
       // User browser is away
       state.focused = false;
+    },
+    requestPermission(state) {
+      requestNotificationPermission().then((granted) => {
+        state.isGranted = granted;
+      });
     },
   },
   extraReducers: (builder) => {

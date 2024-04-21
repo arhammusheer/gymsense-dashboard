@@ -37,6 +37,15 @@ const createSSEMiddleware = (url: string): Middleware => {
           // refetch the iot list
           apiSlice.util.invalidateTags(["Iots"]);
 
+          // Replace the iot with the new data
+          apiSlice.util.updateQueryData("getIots", undefined, (draft) => {
+            const index = draft.findIndex((iot) => iot.id === data.data.id);
+            if (index !== -1) {
+              draft[index] = data.data;
+            } else {
+              draft.push(data.data);
+            }
+          });
           break;
         case "notification":
           store.dispatch(
