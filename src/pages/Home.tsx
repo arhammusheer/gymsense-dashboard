@@ -20,6 +20,7 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
+
 import { MouseEvent, useEffect } from "react";
 import { BiBell } from "react-icons/bi";
 import { CgMenu } from "react-icons/cg";
@@ -28,8 +29,8 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/headers/PageHeader";
 import { useGetIotsQuery } from "../redux/apis/api.slice";
 import { authActions } from "../redux/slices/auth.slice";
-import { notificationActions } from "../redux/slices/notification.slice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
+import { notificationActions } from "../redux/slices/notification.slice";
 
 export default function Home() {
   // Setup refetch on token change
@@ -203,7 +204,7 @@ const Iot = ({
   const notifyWhenAvailable = async (e: MouseEvent) => {
     e.stopPropagation();
     // Request Notification Permission
-   await Notification.requestPermission()
+    await Notification.requestPermission();
     // Notify when available
     dispatch(
       notificationActions.notifyWhenAvailable({
@@ -245,9 +246,8 @@ const Iot = ({
           aria-label="Notify When Available"
           icon={<BiBell />}
           // On hover increase the size of the icon
-          bg={occupancy ? occ: avail}
+          bg={occupancy ? occ : avail}
           _hover={{ bg: occupancy ? occButton : availButton }}
-          
         />
       </Stack>
     </Card>
