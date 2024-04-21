@@ -44,7 +44,7 @@ export const apiSlice = createApi({
       query: (id) => `/iot/${id}`,
       transformResponse: (response: { status: boolean; data: Iot }) =>
         response.data,
-      providesTags: (result, error, id) => [{ type: "Iots", id }],
+      providesTags: (_result, _error, id) => [{ type: "Iots", id }],
     }),
     updateIot: builder.mutation<Iot, Partial<Iot> & Pick<Iot, "id">>({
       query: ({ id, ...data }) => ({
@@ -52,7 +52,7 @@ export const apiSlice = createApi({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Iots", id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: "Iots", id }],
       onQueryStarted: async ({ id, ...data }, { dispatch, queryFulfilled }) => {
         const patchResult = dispatch(
           apiSlice.util.updateQueryData("getIot", id, (draft) => {
