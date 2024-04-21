@@ -21,15 +21,15 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { MouseEvent, useEffect } from "react";
+import { BiBell } from "react-icons/bi";
 import { CgMenu } from "react-icons/cg";
 import { GiBattery75 } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/headers/PageHeader";
 import { useGetIotsQuery } from "../redux/apis/api.slice";
-import { useAppDispatch, useAppSelector } from "../redux/store";
 import { authActions } from "../redux/slices/auth.slice";
-import { notificationActions, requestNotificationPermission } from "../redux/slices/notification.slice";
-import { BiBell } from "react-icons/bi";
+import { notificationActions } from "../redux/slices/notification.slice";
+import { useAppDispatch, useAppSelector } from "../redux/store";
 
 export default function Home() {
   // Setup refetch on token change
