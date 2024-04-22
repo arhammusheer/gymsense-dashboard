@@ -188,12 +188,14 @@ const Iot = ({
   occupancy,
   id,
   batteryLevel,
+  updatedAt,
 }: {
   name?: string;
   occupancy: boolean;
   location?: string;
   id: string;
   batteryLevel?: number;
+  updatedAt?: string;
 }) => {
   const occ = useColorModeValue("red.200", "red.900");
   const avail = useColorModeValue("green.200", "green.900");
@@ -231,16 +233,24 @@ const Iot = ({
         {name || id}
       </Heading>
       <Text>{location || "Unknown"}</Text>
-      <Stack direction="row" justify={"space-between"}>
-        <Heading as="h4" size="sm">
-          {occupancy ? "Taken" : "Available"}
-        </Heading>
-        {batteryLevel !== undefined && (
+      {updatedAt && <RelativeTime date={updatedAt} />}
+      <Stack
+        direction="row"
+        justify={"space-between"}
+        h={"full"}
+        align={"flex-end"}
+      >
+        <Stack direction="row">
           <Heading as="h4" size="sm">
-            <Icon as={GiBattery75} />
-            {batteryLevel}%
+            {occupancy ? "Taken" : "Available"}
           </Heading>
-        )}
+          {batteryLevel !== undefined && (
+            <Heading as="h4" size="sm">
+              <Icon as={GiBattery75} />
+              {batteryLevel}%
+            </Heading>
+          )}
+        </Stack>
         <IconButton
           onClick={notifyWhenAvailable}
           aria-label="Notify When Available"
@@ -252,4 +262,42 @@ const Iot = ({
       </Stack>
     </Card>
   );
+};
+
+// Relative Time
+const RelativeTime = ({ date }: { date: string }) => {
+  const updatedAt = new Date(date);
+  const now = new Date();
+
+  const diff = now.getTime() - updatedAt.getTime();
+  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(months / 12);
+
+  if (years > 0) {
+    return <Text>{rtf.format(-years, "year")}</Text>;
+  }
+
+  if (months > 0) {
+    return <Text>{rtf.format(-months, "month")}</Text>;
+  }
+
+  if (days > 0) {
+    return <Text>{rtf.format(-days, "day")}</Text>;
+  }
+
+  if (hours > 0) {
+    return <Text>{rtf.format(-hours, "hour")}</Text>;
+  }
+
+  if (minutes > 0) {
+    return <Text>{rtf.format(-minutes, "minute")}</Text>;
+  }
+
+  return <Text>{rtf.format(-seconds, "second")}</Text>;
 };
