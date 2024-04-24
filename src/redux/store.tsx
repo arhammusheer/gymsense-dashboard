@@ -2,10 +2,10 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { useDispatch, useSelector } from "react-redux";
 import { apiSlice } from "./apis/api.slice";
+import { API_BASE_URL } from "./const";
+import createSSEMiddleware from "./middleware/sse";
 import animationSlice from "./slices/animation.slice";
 import authSlice from "./slices/auth.slice";
-import createSSEMiddleware from "./middleware/sse";
-import { API_BASE_URL } from "./const";
 import notificationSlice from "./slices/notification.slice";
 
 export const anonyID = Math.random().toString(36).substring(7);

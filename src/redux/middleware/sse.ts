@@ -1,4 +1,4 @@
-import { Middleware } from "@reduxjs/toolkit";
+import { ThunkMiddleware } from "@reduxjs/toolkit";
 import { apiSlice } from "../apis/api.slice";
 import { notificationActions } from "../slices/notification.slice";
 
@@ -24,7 +24,7 @@ interface NotificationEvent extends SSEEvent {
 
 type IEvent = IotEvent | NotificationEvent;
 
-const createSSEMiddleware = (url: string): Middleware => {
+const createSSEMiddleware = (url: string): ThunkMiddleware => {
   const eventSource = new EventSource(url, {
     withCredentials: true,
   });
@@ -38,14 +38,23 @@ const createSSEMiddleware = (url: string): Middleware => {
           apiSlice.util.invalidateTags(["Iots"]);
 
           // Replace the iot with the new data
-          apiSlice.util.updateQueryData("getIots", undefined, (draft) => {
-            const index = draft.findIndex((iot) => iot.id === data.data.id);
-            if (index !== -1) {
-              draft[index] = data.data;
-            } else {
-              draft.push(data.data);
-            }
-          });
+          store.dispatch(
+            apiSlice.util.updateQueryData("getIots", undefined, (draft) => {
+              const index = draft.findIndex((iot) => iot.id === data.data.id);
+              if (index !== -1) {
+                draft[index] = data.data;
+              } else {
+                draft.push(data.data);
+              }
+            })
+          );
+
+          // Singular update
+          store.dispatch(
+            apiSlice.util.updateQueryData("getIot", data.data.id, (draft) => {
+              Object.assign(draft, data.data);
+            })
+          );
           break;
         case "notification":
           store.dispatch(
