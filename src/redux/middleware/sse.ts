@@ -56,7 +56,7 @@ const createSSEMiddleware = (url: string): ThunkMiddleware => {
             apiSlice.util.updateQueryData("getIots", undefined, (draft) => {
               const index = draft.findIndex((iot) => iot.id === data.data.id);
               if (index !== -1) {
-                draft[index] = data.data;
+                draft[index] = { ...draft[index], ...data.data };
               } else {
                 draft.push(data.data);
               }
@@ -66,7 +66,7 @@ const createSSEMiddleware = (url: string): ThunkMiddleware => {
           // Singular update
           store.dispatch(
             apiSlice.util.updateQueryData("getIot", data.data.id, (draft) => {
-              Object.assign(draft, data.data);
+              Object.assign(draft, { ...draft, ...data.data });
             })
           );
           break;
