@@ -8,6 +8,7 @@ interface SSEEvent {
 }
 interface IotEvent extends SSEEvent {
   domain: "iot";
+  action: "update" | "delete" | "create";
   data: {
     id: string;
     name: string;
@@ -36,6 +37,19 @@ const createSSEMiddleware = (url: string): ThunkMiddleware => {
         case "iot":
           // refetch the iot list
           apiSlice.util.invalidateTags(["Iots"]);
+
+          if (data.action === "delete") {
+            // Remove the iot from the list
+            store.dispatch(
+              apiSlice.util.updateQueryData("getIots", undefined, (draft) => {
+                const index = draft.findIndex((iot) => iot.id === data.data.id);
+                if (index !== -1) {
+                  draft.splice(index, 1);
+                }
+              })
+            );
+            return;
+          }
 
           // Replace the iot with the new data
           store.dispatch(
