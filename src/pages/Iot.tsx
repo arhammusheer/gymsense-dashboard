@@ -92,7 +92,7 @@ export default function Iot() {
 
   return (
     <Box>
-      <Box p={8} bg={bg()} color="white">
+      <Box p={8} bg={bg()} color={"white"}>
         <PageHeader title={title()} subtitle={subtitle()} isLoading={isLoading}>
           <RefetchButton refetch={() => refetch()} />
 
@@ -105,7 +105,8 @@ export default function Iot() {
 }
 
 function DeleteButton({ id }: { id: string }) {
-  const defaultBg = useColorModeValue("gray.100", "black");
+  const defaultBg = useColorModeValue("white", "black");
+  const defaultColor = useColorModeValue("black", "white");
   const { onOpen, onClose, isOpen } = useDisclosure();
   const [deleteIot, { isLoading, isSuccess }] = iot.deleteIot();
   const navigate = useNavigate();
@@ -120,7 +121,7 @@ function DeleteButton({ id }: { id: string }) {
       <PopoverTrigger>
         <IconButton aria-label="delete" icon={<BiTrash />} colorScheme="red" />
       </PopoverTrigger>
-      <PopoverContent bg={defaultBg}>
+      <PopoverContent bg={defaultBg} color={defaultColor}>
         <PopoverArrow />
         <PopoverCloseButton />
         <PopoverHeader>Confirmation</PopoverHeader>
