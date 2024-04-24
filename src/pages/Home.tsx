@@ -249,7 +249,8 @@ const Iot = ({
           {batteryLevel !== undefined && (
             <Heading as="h4" size="sm">
               <Icon as={GiBattery75} />
-              {batteryLevel * 100}%
+              {batteryLevel > 0 && batteryLevel * 100 + "%"}
+              {batteryLevel === 0 && "No Battery"}
             </Heading>
           )}
         </Stack>
