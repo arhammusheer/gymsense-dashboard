@@ -48,12 +48,14 @@ const Notification = () => {
     (state) => state.notifications.notifications
   );
   const focused = useAppSelector((state) => state.notifications.focused);
+  const granted = useAppSelector((state) => state.notifications.isGranted);
   const dispatch = useAppDispatch();
 
   // On new notification, show new toast with sound notification
   useEffect(() => {
     const unviewed = notifications.filter((n) => !n.viewed);
-    if (focused && unviewed.length > 0) {
+    // If the browser is focused or the notification is not granted, only in-app notification is available
+    if ((focused || !granted) && unviewed.length > 0) {
       unviewed.forEach((n) => {
         toast({
           title: "Update",
@@ -66,7 +68,8 @@ const Notification = () => {
       });
     }
 
-    if (!focused && unviewed.length > 0) {
+    // If the browser is not focused and the notification is granted, play sound and show notification
+    if (!focused && unviewed.length > 0 && granted) {
       audio.play();
       const notification = new window.Notification("Update", {
         body: unviewed[0].message,
@@ -75,7 +78,7 @@ const Notification = () => {
         dispatch(notificationActions.viewed(unviewed[0].id));
       };
     }
-  }, [notifications, toast, audio, dispatch, focused]);
+  }, [notifications, toast, audio, dispatch, focused, granted]);
 
   // Focus and away event listeners
   useEffect(() => {

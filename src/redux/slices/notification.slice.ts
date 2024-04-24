@@ -54,6 +54,11 @@ const initialState: NotificationState = {
 };
 
 export const requestNotificationPermission = async () => {
+  // If the browser does not support notifications, return false
+  if (!("Notification" in window)) {
+    return false;
+  }
+
   if (Notification.permission !== "granted") {
     return await Notification.requestPermission()
       .then(() => true)
@@ -69,7 +74,6 @@ const notificationSlice = createSlice({
   reducers: {
     new: (state, action: PayloadAction<Notification>) => {
       state.notifications.push(action.payload);
-      requestNotificationPermission();
     },
     viewed: (state, action: PayloadAction<string>) => {
       const notification = state.notifications.find(

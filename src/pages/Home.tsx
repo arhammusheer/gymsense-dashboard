@@ -205,8 +205,10 @@ const Iot = ({
 
   const notifyWhenAvailable = async (e: MouseEvent) => {
     e.stopPropagation();
+
     // Request Notification Permission
-    await Notification.requestPermission();
+    dispatch(notificationActions.requestPermission());
+
     // Notify when available
     dispatch(
       notificationActions.notifyWhenAvailable({
@@ -251,6 +253,7 @@ const Iot = ({
             </Heading>
           )}
         </Stack>
+
         <IconButton
           onClick={notifyWhenAvailable}
           aria-label="Notify When Available"
