@@ -13,7 +13,14 @@ export interface Iot {
   location?: string;
   createdAt?: string;
   updatedAt?: string;
+  timeline?: {
+    from: string;
+    to: string;
+    occupancy: boolean;
+  }[];
 }
+
+const ENABLE_STATE_TIMELINE = true;
 
 export const apiSlice = createApi({
   reducerPath: "api",
@@ -41,7 +48,7 @@ export const apiSlice = createApi({
     }),
 
     getIot: builder.query<Iot, string>({
-      query: (id) => `/iot/${id}`,
+      query: (id) => `/iot/${id}?getTimeline=${ENABLE_STATE_TIMELINE}`,
       transformResponse: (response: { status: boolean; data: Iot }) =>
         response.data,
       providesTags: (_result, _error, id) => [{ type: "Iots", id }],

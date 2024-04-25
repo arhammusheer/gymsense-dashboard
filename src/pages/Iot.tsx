@@ -19,11 +19,12 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Stack,
+  Text,
   Tooltip,
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CgCheck } from "react-icons/cg";
 import { RiRepeat2Line } from "react-icons/ri";
 import {
@@ -100,6 +101,7 @@ export default function Iot() {
         </PageHeader>
       </Box>
       {data && <AdminControls data={data} />}
+      {data && data.timeline && <StateTimeline data={data.timeline} />}
     </Box>
   );
 }
@@ -302,4 +304,98 @@ const hasPermissionToModify = (permissions: string[], idOfDevice: string) => {
     if (target !== idOfDevice && target !== "*") return false;
     return true;
   }
+};
+
+// Transform data parts of total width according to from and to timestamps
+const transformData = (
+  data: { from: string; to: string; occupancy: boolean }[],
+  width: number
+) => {
+  const total = data.reduce((acc, item) => {
+    const from = new Date(item.from).getTime();
+    const to = new Date(item.to).getTime();
+    return acc + to - from;
+  }, 0);
+
+  return data.map((item) => {
+    const from = new Date(item.from).getTime();
+    const to = new Date(item.to).getTime();
+    const occupancy = item.occupancy;
+    const w = ((to - from) / total) * width;
+    return { from, to, occupancy, w };
+  });
+};
+
+const relativeHour = (date: Date) => {
+  const hour = Intl.DateTimeFormat("en-US", { hour: "numeric" }).format(date);
+
+  return `${hour}`;
+};
+
+const StateTimeline = ({
+  data,
+}: {
+  data: { from: string; to: string; occupancy: boolean }[];
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    if (ref.current) {
+      setWidth(ref.current.offsetWidth);
+    }
+  }, []);
+
+  const transformedData = transformData(data, width);
+
+  return (
+    <Stack direction={"column"} spacing={4} p={8}>
+      <Stack
+        direction={"row"}
+        spacing={0}
+        ref={ref}
+        w={"100%"}
+        rounded={"full"}
+      >
+        {transformedData.map((item, index) => {
+          return (
+            <Box
+              key={index}
+              h={"2rem"}
+              w={item.w}
+              bg={item.occupancy ? "red.500" : "green.500"}
+              borderLeftRadius={index === 0 ? "full" : 0}
+              borderRightRadius={
+                index === transformedData.length - 1 ? "full" : 0
+              }
+            />
+          );
+        })}
+      </Stack>
+      // Tick marks
+      <Stack direction={"row"} spacing={0} w={"100%"} justify={"space-between"}>
+        <Text hidden={!transformedData.length} fontSize={"xs"}>
+          {relativeHour(new Date(data[0].from))}
+        </Text>
+        <Box display={{ base: "none", md: "block" }}>
+          <Text hidden={!transformedData.length} fontSize={"xs"}>
+            {relativeHour(new Date(data[Math.floor(data.length / 4)].from))}
+          </Text>
+        </Box>
+        <Text hidden={!transformedData.length} fontSize={"xs"}>
+          {relativeHour(new Date(data[Math.floor(data.length / 2)].from))}
+        </Text>
+        <Box display={{ base: "none", md: "block" }}>
+          <Text hidden={!transformedData.length} fontSize={"xs"}>
+            {relativeHour(
+              new Date(data[Math.floor((3 * data.length) / 4)].from)
+            )}
+          </Text>
+        </Box>
+        <Text hidden={!transformedData.length} fontSize={"xs"}>
+          {relativeHour(new Date(data[data.length - 1].to))}
+        </Text>
+      </Stack>
+    </Stack>
+  );
 };
