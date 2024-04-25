@@ -420,6 +420,35 @@ const StateTimeline = ({
 
   const transformedData = transformData(data, width);
 
+  const firstTick = relativeHour(new Date(data[0].from)); // 0
+  const OneFourthTick = relativeHour(
+    new Date(
+      new Date(data[0].from).getTime() +
+        (new Date(data[data.length - 1].to).getTime() -
+          new Date(data[0].from).getTime()) /
+          4
+    )
+  );
+  const middleTick = relativeHour(
+    new Date(
+      new Date(data[0].from).getTime() +
+        (new Date(data[data.length - 1].to).getTime() -
+          new Date(data[0].from).getTime()) /
+          2
+    )
+  );
+
+  const ThreeFourthTick = relativeHour(
+    new Date(
+      new Date(data[0].from).getTime() +
+        (new Date(data[data.length - 1].to).getTime() -
+          new Date(data[0].from).getTime()) *
+          (3 / 4)
+    )
+  );
+
+  const lastTick = relativeHour(new Date(data[data.length - 1].to));
+
   return (
     <Stack direction={"column"} spacing={4} p={8}>
       <Stack
@@ -440,28 +469,21 @@ const StateTimeline = ({
           );
         })}
       </Stack>
-      // Tick marks
       <Stack direction={"row"} spacing={0} w={"100%"} justify={"space-between"}>
         <Text hidden={!transformedData.length} fontSize={"xs"}>
-          {relativeHour(new Date(data[0].from))}
+          {firstTick}
         </Text>
-        <Box display={{ base: "none", md: "block" }}>
-          <Text hidden={!transformedData.length} fontSize={"xs"}>
-            {relativeHour(new Date(data[Math.floor(data.length / 4)].from))}
-          </Text>
-        </Box>
         <Text hidden={!transformedData.length} fontSize={"xs"}>
-          {relativeHour(new Date(data[Math.floor(data.length / 2)].from))}
+          {OneFourthTick}
         </Text>
-        <Box display={{ base: "none", md: "block" }}>
-          <Text hidden={!transformedData.length} fontSize={"xs"}>
-            {relativeHour(
-              new Date(data[Math.floor((3 * data.length) / 4)].from)
-            )}
-          </Text>
-        </Box>
         <Text hidden={!transformedData.length} fontSize={"xs"}>
-          {relativeHour(new Date(data[data.length - 1].to))}
+          {middleTick}
+        </Text>
+        <Text hidden={!transformedData.length} fontSize={"xs"}>
+          {ThreeFourthTick}
+        </Text>
+        <Text hidden={!transformedData.length} fontSize={"xs"}>
+          {lastTick}
         </Text>
       </Stack>
     </Stack>
