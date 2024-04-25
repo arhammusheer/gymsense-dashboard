@@ -58,6 +58,8 @@ const Notification = () => {
     if ((focused || !granted) && unviewed.length > 0) {
       // Delay the notification to show after the toast
 
+      audio.play();
+
       unviewed.forEach((n) => {
         toast({
           title: "Update",
