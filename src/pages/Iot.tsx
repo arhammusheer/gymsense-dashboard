@@ -250,6 +250,14 @@ const AdminControls = ({ data }: { data: Iot }) => {
           defaultValue={data.isOffline}
           helptext="Device is offline/maintenance"
         />
+
+        <MutableCheckbox
+          label="Occupancy"
+          name="occupancy"
+          id={data.id}
+          defaultValue={data.occupancy}
+          helptext="Device is occupied?"
+        />
       </Stack>
     </Stack>
   );
