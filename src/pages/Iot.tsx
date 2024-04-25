@@ -364,10 +364,6 @@ const StateTimeline = ({
               h={"2rem"}
               w={item.w}
               bg={item.occupancy ? "red.500" : "green.500"}
-              borderLeftRadius={index === 0 ? "full" : 0}
-              borderRightRadius={
-                index === transformedData.length - 1 ? "full" : 0
-              }
             />
           );
         })}
