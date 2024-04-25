@@ -52,8 +52,10 @@ export default function Iot() {
   const [occupied, setOccupied] = useState<"Taken" | "Available" | "Unknown">(
     "Unknown"
   );
+  const [isOffline, setIsOffline] = useState(false);
 
   const bg = () => {
+    if (isOffline) return "gray.500";
     switch (occupied) {
       case "Taken":
         return "red.500";
@@ -67,6 +69,7 @@ export default function Iot() {
   useEffect(() => {
     if (isSuccess) {
       setOccupied(data.occupancy ? "Taken" : "Available");
+      setIsOffline(data.isOffline);
     }
   }, [data, isSuccess]);
 
@@ -78,6 +81,8 @@ export default function Iot() {
 
   const subtitle = () => {
     if (isSuccess) {
+      if (isOffline) return "Device is offline";
+
       return `Occupancy: ${occupied}`;
     }
     return "Device Information";
