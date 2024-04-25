@@ -56,6 +56,8 @@ const Notification = () => {
     const unviewed = notifications.filter((n) => !n.viewed);
     // If the browser is focused or the notification is not granted, only in-app notification is available
     if ((focused || !granted) && unviewed.length > 0) {
+      // Delay the notification to show after the toast
+
       unviewed.forEach((n) => {
         toast({
           title: "Update",
