@@ -235,6 +235,14 @@ const AdminControls = ({ data }: { data: Iot }) => {
           defaultValue={data.location || ""}
           helptext="Device location"
         />
+
+        <MutableCheckbox
+          label="Is Offline"
+          name="isOffline"
+          id={data.id}
+          defaultValue={data.isOffline}
+          helptext="Device is offline/maintenance"
+        />
       </Stack>
     </Stack>
   );
@@ -272,6 +280,55 @@ const MutableField = ({
               setValue(defaultValue);
             }
           }}
+        />
+        <IconButton
+          hidden={value === defaultValue}
+          isLoading={isLoading}
+          onClick={() => {
+            updateIot({ id, [name]: value });
+          }}
+          colorScheme="green"
+          aria-label="Update"
+          icon={<Icon as={CgCheck} size="sm" />}
+        />
+        <IconButton
+          hidden={value === defaultValue}
+          onClick={() => setValue(defaultValue)}
+          colorScheme="red"
+          aria-label="Reset"
+          icon={<Icon as={TiTimes} size="sm" />}
+        />
+      </InputGroup>
+      {helptext && <FormHelperText>{helptext}</FormHelperText>}
+    </FormControl>
+  );
+};
+
+const MutableCheckbox = ({
+  label,
+  name,
+  id,
+  defaultValue,
+  helptext,
+}: {
+  label: string;
+  name: string;
+  id: string;
+  defaultValue: boolean;
+  helptext?: string;
+}) => {
+  const [updateIot, { isLoading }] = iot.updateIot();
+
+  const [value, setValue] = useState(defaultValue);
+
+  return (
+    <FormControl>
+      <FormLabel>{label}</FormLabel>
+      <InputGroup gap={2}>
+        <Input
+          value={value ? "true" : "false"}
+          isReadOnly
+          onClick={() => setValue(!value)}
         />
         <IconButton
           hidden={value === defaultValue}

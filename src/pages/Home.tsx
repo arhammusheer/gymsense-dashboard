@@ -189,6 +189,7 @@ const Iot = ({
   id,
   batteryLevel,
   updatedAt,
+  isOffline,
 }: {
   name?: string;
   occupancy: boolean;
@@ -196,10 +197,12 @@ const Iot = ({
   id: string;
   batteryLevel?: number;
   updatedAt?: string;
+  isOffline?: boolean;
 }) => {
   const occ = useColorModeValue("red.200", "red.900");
   const avail = useColorModeValue("green.200", "green.900");
   const occButton = useColorModeValue("red.300", "red.800");
+  const offline = useColorModeValue("gray.200", "gray.900");
   const availButton = useColorModeValue("green.300", "green.800");
   const dispatch = useAppDispatch();
 
@@ -227,7 +230,7 @@ const Iot = ({
     <Card
       p={4}
       boxShadow="md"
-      bg={occupancy ? occ : avail}
+      bg={isOffline ? offline : occupancy ? occ : avail}
       cursor={"pointer"}
       onClick={handleClick}
     >
@@ -244,7 +247,7 @@ const Iot = ({
       >
         <Stack direction="row">
           <Heading as="h4" size="sm">
-            {occupancy ? "Taken" : "Available"}
+            {isOffline ? "Offline" : occupancy ? "Taken" : "Available"}
           </Heading>
           {batteryLevel !== undefined && (
             <Heading as="h4" size="sm">
@@ -254,15 +257,16 @@ const Iot = ({
             </Heading>
           )}
         </Stack>
-
-        <IconButton
-          onClick={notifyWhenAvailable}
-          aria-label="Notify When Available"
-          icon={<BiBell />}
-          // On hover increase the size of the icon
-          bg={occupancy ? occ : avail}
-          _hover={{ bg: occupancy ? occButton : availButton }}
-        />
+        {!isOffline && (
+          <IconButton
+            onClick={notifyWhenAvailable}
+            aria-label="Notify When Available"
+            icon={<BiBell />}
+            // On hover increase the size of the icon
+            bg={occupancy ? occ : avail}
+            _hover={{ bg: occupancy ? occButton : availButton }}
+          />
+        )}
       </Stack>
     </Card>
   );

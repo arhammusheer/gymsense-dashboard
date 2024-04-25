@@ -8,6 +8,7 @@ export interface Iot {
   id: string;
   key?: string;
   occupancy: boolean;
+  isOffline: boolean;
   batteryLevel?: number;
   name?: string;
   location?: string;
@@ -89,7 +90,7 @@ export const apiSlice = createApi({
         const patchResult = dispatch(
           apiSlice.util.updateQueryData("getIots", undefined, (draft) => {
             // Add the new item to the list
-            draft.push({ id: "temp", occupancy: false });
+            draft.push({ id: "temp", occupancy: false, isOffline: false });
           })
         );
         try {
