@@ -57,7 +57,9 @@ const ListOfIots = () => {
   return (
     <Grid templateColumns="repeat(auto-fill, minmax(250px, 1fr))" gap={4}>
       {isSuccess &&
-        data.map((device, index) => <Iot key={index} {...device} />)}
+        data
+          .map((device) => <Iot key={device.id} {...device} />)
+          .sort((a, b) => (a.props.name || "").localeCompare(b.props.name || ""))}
       {isLoading &&
         Array.from({ length: 5 }).map((_, index) => (
           <Card key={index} p={4} boxShadow="md">

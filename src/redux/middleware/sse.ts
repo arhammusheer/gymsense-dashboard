@@ -14,6 +14,7 @@ interface IotEvent extends SSEEvent {
     name: string;
     occupancy: boolean;
     location: string;
+    isOffline: boolean;
   };
 }
 interface NotificationEvent extends SSEEvent {
