@@ -106,7 +106,9 @@ export default function Iot() {
         </PageHeader>
       </Box>
       {data && <AdminControls data={data} />}
-      {data && data.timeline && <StateTimeline data={data.timeline} />}
+      {data && data.timeline && data.timeline.length > 0 && (
+        <StateTimeline data={data.timeline} />
+      )}
     </Box>
   );
 }
