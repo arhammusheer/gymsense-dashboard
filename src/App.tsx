@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import notitificationSound from "./assets/notification.mp3";
-import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import Iot from "./pages/Iot";
 import CreateNewIot from "./pages/IotNew";
@@ -30,7 +29,6 @@ const App = () => {
         <Route path="/iot/:id" element={<Iot />} />
         {isAuthenticated ? (
           <>
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/role-management" element={<Roles />} />
           </>
         ) : (
