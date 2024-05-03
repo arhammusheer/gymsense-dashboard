@@ -59,7 +59,9 @@ const ListOfIots = () => {
       {isSuccess &&
         data
           .map((device) => <Iot key={device.id} {...device} />)
-          .sort((a, b) => (a.props.name || "").localeCompare(b.props.name || ""))}
+          .sort((a, b) =>
+            (a.props.name || "").localeCompare(b.props.name || "")
+          )}
       {isLoading &&
         Array.from({ length: 5 }).map((_, index) => (
           <Card key={index} p={4} boxShadow="md">
@@ -236,9 +238,18 @@ const Iot = ({
       cursor={"pointer"}
       onClick={handleClick}
     >
-      <Heading as="h3" size="md" mb={2}>
-        {name || id}
-      </Heading>
+      <Stack direction="row" justify={"space-between"}>
+        <Heading as="h3" size="md" mb={2}>
+          {name || id}
+        </Heading>
+        {batteryLevel !== undefined && (
+          <Heading as="h4" size="sm">
+            <Icon as={GiBattery75} />
+            {batteryLevel > 0 && batteryLevel * 100 + "%"}
+            {batteryLevel === 0 && "No Battery"}
+          </Heading>
+        )}
+      </Stack>
       <Text>{location || "Unknown"}</Text>
       {updatedAt && <RelativeTime date={updatedAt} />}
       <Stack
@@ -251,13 +262,6 @@ const Iot = ({
           <Heading as="h4" size="sm">
             {isOffline ? "Offline" : occupancy ? "Taken" : "Available"}
           </Heading>
-          {batteryLevel !== undefined && (
-            <Heading as="h4" size="sm">
-              <Icon as={GiBattery75} />
-              {batteryLevel > 0 && batteryLevel * 100 + "%"}
-              {batteryLevel === 0 && "No Battery"}
-            </Heading>
-          )}
         </Stack>
         {!isOffline && (
           <IconButton
